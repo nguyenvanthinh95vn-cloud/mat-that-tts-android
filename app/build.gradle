@@ -35,10 +35,10 @@ tasks.named('preBuild') { dependsOn downloadSherpaAar, downloadModel, downloadEs
 // Model giong Ngoc Huyen: KHONG commit vao git (60MB file nhi phan,
 // snapshot push cua GitHub khong nhan) — Gradle tu tai ve tu Google Drive
 // luc build. File tren Drive: MatThat/ngochuyen-onnx/
-// ngochuyen-epoch209-sherpa.onnx (da chia se "anyone with the link").
+// ngochuyen-final-sherpa.onnx (epoch 337, ban tot nhat; da chia se "anyone with the link").
 // Doi giong: chay tools/convert_model.py, upload ban moi len Drive,
 // sua modelDriveFileId + MODEL_SIZE o duoi (xem README muc "Doi giong moi").
-def modelDriveFileId = '1RMNkz7jzAT60mTRq2Xz9XMo7AP6E35EE'
+def modelDriveFileId = '1B2Xad9-kot018N6ZSNzRIdkTxv_r5mkv'
 def modelFile = file("src/main/assets/piper/ngochuyen.onnx")
 def MODEL_SIZE = 63516181L
 

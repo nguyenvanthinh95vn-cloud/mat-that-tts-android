@@ -31,12 +31,12 @@ File giọng trong app (`app/src/main/assets/piper/`) — chỉ `tokens.txt`
 được commit vào git; model và espeak-ng-data **tải về lúc build**
 (vì GitHub snapshot push không nhận file nhị phân lớn):
 
-- `ngochuyen.onnx` (60.6 MB) — model epoch 209, **đã thêm metadata**
+- `ngochuyen.onnx` (60.6 MB) — model epoch 337 (bản tốt nhất), **đã thêm metadata**
   sherpa-onnx yêu cầu (`model_type=vits`, `comment=piper`, `language=Vietnamese`,
   `voice=vi`, `has_espeak=1`, `n_speakers=1`, `sample_rate=22050`).
   Model export từ train KHÔNG có metadata này nên bắt buộc phải thêm
   (xem `tools/convert_model.py`). Tải từ Google Drive lúc build
-  (file `MatThat/ngochuyen-onnx/ngochuyen-epoch209-sherpa.onnx`,
+  (file `MatThat/ngochuyen-onnx/ngochuyen-final-sherpa.onnx`,
   chia sẻ "anyone with the link"), link + kích thước kiểm chứng nằm
   trong task `downloadModel` ở `app/build.gradle`.
 - `tokens.txt` (154 dòng) — sinh từ `phoneme_id_map` trong file `.onnx.json`.
@@ -81,7 +81,7 @@ python3 tools/convert_model.py \
    trong `app/build.gradle` theo file mới.
 3. Copy `tokens.txt` mới vào `app/src/main/assets/piper/` (file này commit
    vào git) rồi push — GitHub tự build APK giọng mới. File `.onnx.json` gốc
-   của giọng đang dùng nằm ở `models/ngochuyen-epoch209.onnx.json` để đối chiếu.
+   của giọng đang dùng nằm ở `models/ngochuyen-final.onnx.json` để đối chiếu.
 
 (Lưu ý: `convert_model.py` ghi đè `app/src/main/assets/piper/ngochuyen.onnx`
 + `tokens.txt` ở local — file `.onnx` đó chỉ để đối chiếu/kiểm tra, đừng
