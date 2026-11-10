@@ -82,7 +82,7 @@ class TtsEngine(private val context: Context) {
         )
         val engine = OfflineTts(assetManager = context.assets, config = config)
         tts = engine
-        Log.i(TAG, "TTS ready, sampleRate=${sampleRate()}, speakers=${engine.numSpeakers()}")
+        Log.i(TAG, "TTS ready, sampleRate=${sampleRate}, speakers=${engine.numSpeakers()}")
     }
 
     /** Doc 1 doan text ngan -> mang float [-1, 1]. Goi tren luong nen. */
