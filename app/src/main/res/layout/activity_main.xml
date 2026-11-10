@@ -65,18 +65,25 @@
         android:visibility="gone" />
 
     <!-- ================= MAN HINH 1: DOC VAN BAN ================= -->
-    <LinearLayout
+    <ScrollView
         android:id="@+id/screenText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
         <EditText
             android:id="@+id/etText"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:minHeight="180dp"
+            android:scrollbars="vertical"
             android:background="@android:color/white"
             android:gravity="top|start"
             android:hint="Dán truyện / văn bản vào đây... dài bao nhiêu cũng được, app tự chia đoạn rồi nối thành 1 file."
@@ -205,7 +212,8 @@
                 android:layout_weight="1"
                 android:text="Lưu ra chỗ khác" />
         </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <!-- ================= MAN HINH 2: SRT -> VOICE ================= -->
     <LinearLayout
@@ -530,7 +538,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="12dp"
-                android:text="Mật Thất TTS 1.0 — giọng Ngọc Huyền (epoch 209), model Piper/VITS chạy offline hoàn toàn trên máy, không mạng, không giới hạn ký tự."
+                android:text="Mật Thất TTS 1.0 — giọng Ngọc Huyền (epoch 337), model Piper/VITS chạy offline hoàn toàn trên máy, không mạng, không giới hạn ký tự."
                 android:textColor="@color/matthat_hint"
                 android:textSize="13sp" />
         </LinearLayout>

@@ -781,8 +781,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateProgress(done: Int, total: Int, text: String) {
         runOnUiThread {
-            progressBar.progress = if (total > 0) done * 100 / total else 0
-            tvProgress.text = text
+            val pct = if (total > 0) done * 100 / total else 0
+            progressBar.progress = pct
+            tvProgress.text = "$text $pct%"
         }
     }
 
