@@ -31,12 +31,12 @@ File giọng trong app (`app/src/main/assets/piper/`) — chỉ `tokens.txt`
 được commit vào git; model và espeak-ng-data **tải về lúc build**
 (vì GitHub snapshot push không nhận file nhị phân lớn):
 
-- `ngochuyen.onnx` (60.6 MB) — model epoch 337 (bản tốt nhất), **đã thêm metadata**
+- `ngochuyen.onnx` (60.6 MB) — model epoch 474 v2 (bản tốt nhất, train tiếp từ 337 với thêm 16,4 phút dữ liệu mới), **đã thêm metadata**
   sherpa-onnx yêu cầu (`model_type=vits`, `comment=piper`, `language=Vietnamese`,
   `voice=vi`, `has_espeak=1`, `n_speakers=1`, `sample_rate=22050`).
   Model export từ train KHÔNG có metadata này nên bắt buộc phải thêm
   (xem `tools/convert_model.py`). Tải từ Google Drive lúc build
-  (file `MatThat/ngochuyen-onnx/ngochuyen-final-sherpa.onnx`,
+  (file `MatThat/ngochuyen-v2-sherpa.onnx`,
   chia sẻ "anyone with the link"), link + kích thước kiểm chứng nằm
   trong task `downloadModel` ở `app/build.gradle`.
 - `tokens.txt` (154 dòng) — sinh từ `phoneme_id_map` trong file `.onnx.json`.
