@@ -1,0 +1,17 @@
+# File build tam, file tai ve, file may
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+app/libs/*.aar
+app/build/
+
+# Model + espeak-ng-data: tai ve luc build (xem app/build.gradle),
+# KHONG commit (file nhi phan lon, snapshot push khong nhan).
+app/src/main/assets/piper/ngochuyen.onnx
+app/src/main/assets/piper/espeak-ng-data/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db

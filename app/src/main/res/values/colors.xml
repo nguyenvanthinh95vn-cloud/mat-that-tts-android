@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="matthat_red">#B71C1C</color>
+    <color name="matthat_red_dark">#7F0000</color>
+    <color name="matthat_gold">#F9A825</color>
+    <color name="matthat_bg">#FFF8E1</color>
+    <color name="matthat_text">#212121</color>
+    <color name="matthat_hint">#757575</color>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- File am thanh trong cache (de chia se) -->
+    <cache-path name="cache" path="." />
+    <!-- File trong bo nho rieng cua app -->
+    <external-files-path name="ext" path="." />
+</paths>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Nen do toan khung (truoc day nam o ic_launcher.xml adaptive-icon);
+         them vao day de icon dung doc lap duoc khi khong con file PNG. -->
+    <path
+        android:fillColor="#B71C1C"
+        android:pathData="M0,0 h108 v108 h-108 z" />
+    <!-- Micro ghi am mau vang tren nen do -->
+    <path
+        android:fillColor="#F9A825"
+        android:pathData="M44,18 h20 a10,10 0 0 1 10,10 v22 a10,10 0 0 1 -10,10 h-20 a10,10 0 0 1 -10,-10 v-22 a10,10 0 0 1 10,-10 z" />
+    <path
+        android:fillColor="#B71C1C"
+        android:pathData="M48,32 h12 M48,40 h12 M48,48 h12"
+        android:strokeWidth="3"
+        android:strokeColor="#B71C1C" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M32,52 a22,22 0 0 0 44,0"
+        android:strokeWidth="6"
+        android:strokeColor="#F9A825" />
+    <path
+        android:fillColor="#F9A825"
+        android:pathData="M51,72 h6 v14 h-6 z M38,86 h32 v5 a2,2 0 0 1 -2,2 h-28 a2,2 0 0 1 -2,-2 z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M26,44 a12,12 0 0 0 0,16 M82,44 a12,12 0 0 1 0,16"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF" />
+</vector>

@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/matthat_bg"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- Hang tab: 3 man hinh -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnTabText"
+            style="@style/MatThat.Button.Tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Đọc văn bản" />
+
+        <Button
+            android:id="@+id/btnTabSrt"
+            style="@style/MatThat.Button.Tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SRT → Voice" />
+
+        <Button
+            android:id="@+id/btnTabSettings"
+            style="@style/MatThat.Button.Tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cài đặt" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="Giọng: Ngọc Huyền • Đang chuẩn bị..."
+        android:textColor="@color/matthat_text"
+        android:textSize="13sp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/matthat_hint"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <!-- ================= MAN HINH 1: DOC VAN BAN ================= -->
+    <LinearLayout
+        android:id="@+id/screenText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:gravity="top|start"
+            android:hint="Dán truyện / văn bản vào đây... dài bao nhiêu cũng được, app tự chia đoạn rồi nối thành 1 file."
+            android:inputType="textMultiLine|textCapSentences"
+            android:padding="10dp"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvCharCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 ký tự"
+            android:textColor="@color/matthat_hint"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnOpenTxt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mở file .txt" />
+
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xóa" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Tốc độ đọc:"
+                android:textSize="14sp" />
+
+            <SeekBar
+                android:id="@+id/sbSpeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:max="150"
+                android:progress="50" />
+
+            <TextView
+                android:id="@+id/tvSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="1.00x"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:hint="Tên file (để trống = tự đặt theo giờ)"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnGenerate"
+            style="@style/MatThat.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ĐỌC &amp; LƯU FILE" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPreview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nghe thử" />
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dừng" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPlaySaved"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nghe lại" />
+
+            <Button
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Chia sẻ" />
+
+            <Button
+                android:id="@+id/btnSaveAs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Lưu ra chỗ khác" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ================= MAN HINH 2: SRT -> VOICE ================= -->
+    <LinearLayout
+        android:id="@+id/screenSrt"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnPickSrt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn file .srt" />
+
+        <TextView
+            android:id="@+id/tvSrtFile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            android:text="Chưa chọn file"
+            android:textColor="@color/matthat_hint"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/rgSrtMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <RadioButton
+                android:id="@+id/rbTimeline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Giữ đúng timestamp từng dòng (như bản Windows)" />
+
+            <RadioButton
+                android:id="@+id/rbContinuous"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đọc liền mạch các dòng nối nhau" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/etSrtFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:hint="Tên file (để trống = tự đặt theo giờ)"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnGenerateSrt"
+            style="@style/MatThat.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ĐỌC SRT &amp; LƯU FILE" />
+
+        <Button
+            android:id="@+id/btnStopSrt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dừng" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="Chế độ giữ timestamp: mỗi câu đọc đúng vào giờ của nó trong file SRT, câu nào đọc dài quá giờ của nó thì để tràn (không dời câu sau) — giống hệt bản Windows."
+            android:textColor="@color/matthat_hint"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- ================= MAN HINH 3: CAI DAT ================= -->
+    <ScrollView
+        android:id="@+id/screenSettings"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:text="Nghỉ sau dấu câu (giây) — giống bản Windows:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Ngắt đoạn (xuống dòng đôi)" />
+                <EditText
+                    android:id="@+id/etPauseBreak"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="1.0" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Ngắt giữa các đoạn (chunk)" />
+                <EditText
+                    android:id="@+id/etPauseChunk"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Dấu phẩy ," />
+                <EditText
+                    android:id="@+id/etPauseComma"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.25" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Dấu chấm . ! ?" />
+                <EditText
+                    android:id="@+id/etPauseDot"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.45" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Dấu hai chấm :" />
+                <EditText
+                    android:id="@+id/etPauseColon"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Dấu chấm phẩy ;" />
+                <EditText
+                    android:id="@+id/etPauseSemi"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.4" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Giọng đọc:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="noise_scale" />
+                <EditText
+                    android:id="@+id/etNoiseScale"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.667" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="noise_w" />
+                <EditText
+                    android:id="@+id/etNoiseW"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.8" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Âm lượng đỉnh (0.1 – 1.0)" />
+                <EditText
+                    android:id="@+id/etPeak"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:inputType="numberDecimal"
+                    android:text="0.99" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Định dạng file lưu:"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rgFormat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rbM4a"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="M4A (AAC, nhỏ gọn — mặc định)" />
+
+                <RadioButton
+                    android:id="@+id/rbWav"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="WAV (không nén, file to)" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnSaveSettings"
+                style="@style/MatThat.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lưu cài đặt" />
+
+            <Button
+                android:id="@+id/btnResetSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Khôi phục mặc định" />
+
+            <TextView
+                android:id="@+id/tvAbout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:text="Mật Thất TTS 1.0 — giọng Ngọc Huyền (epoch 209), model Piper/VITS chạy offline hoàn toàn trên máy, không mạng, không giới hạn ký tự."
+                android:textColor="@color/matthat_hint"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Nhat ky chay (chung cho ca 3 man hinh) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp"
+        android:text="Nhật ký:"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:text=""
+            android:textSize="12sp" />
+    </ScrollView>
+</LinearLayout>

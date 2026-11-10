@@ -1,0 +1,137 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// Sherpa-ONNX: thu vien chay model Piper/VITS offline tren dien thoai.
+// AAR KHONG commit vao git (38MB) — Gradle tu tai ve tu GitHub Releases
+// truoc khi build (xem task downloadSherpaAar ben duoi).
+// Version 1.13.8: da kiem chung chay duoc model Ngoc Huyen (epoch 209)
+// bang sherpa-onnx Python 1.13.8 tren may nay (18.5s audio tieng Viet
+// that, khong loi). Ban 2.x moi hon nhung chua kiem chung API Kotlin,
+// nen giu 1.13.8 cho chac.
+def sherpaVersion = '1.13.8'
+def sherpaAarName = "sherpa-onnx-static-link-onnxruntime-${sherpaVersion}.aar"
+def sherpaAarFile = file("libs/${sherpaAarName}")
+
+tasks.register('downloadSherpaAar') {
+    inputs.property('version', sherpaVersion)
+    outputs.file(sherpaAarFile)
+    doLast {
+        if (!sherpaAarFile.exists()) {
+            sherpaAarFile.parentFile.mkdirs()
+            def url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/v${sherpaVersion}/${sherpaAarName}"
+            logger.lifecycle("Downloading sherpa-onnx AAR: ${url}")
+            ant.get(src: url, dest: sherpaAarFile, skipexisting: true)
+            if (!sherpaAarFile.exists() || sherpaAarFile.length() < 10_000_000) {
+                throw new GradleException("Tai AAR sherpa-onnx that bai (file khong ton tai hoac qua nho): ${sherpaAarFile}")
+            }
+            logger.lifecycle("Downloaded sherpa-onnx AAR: ${sherpaAarFile.length()} bytes")
+        }
+    }
+}
+tasks.named('preBuild') { dependsOn downloadSherpaAar, downloadModel, downloadEspeakData }
+
+// Model giong Ngoc Huyen: KHONG commit vao git (60MB file nhi phan,
+// snapshot push cua GitHub khong nhan) — Gradle tu tai ve tu Google Drive
+// luc build. File tren Drive: MatThat/ngochuyen-onnx/
+// ngochuyen-epoch209-sherpa.onnx (da chia se "anyone with the link").
+// Doi giong: chay tools/convert_model.py, upload ban moi len Drive,
+// sua modelDriveFileId + MODEL_SIZE o duoi (xem README muc "Doi giong moi").
+def modelDriveFileId = '1RMNkz7jzAT60mTRq2Xz9XMo7AP6E35EE'
+def modelFile = file("src/main/assets/piper/ngochuyen.onnx")
+def MODEL_SIZE = 63516181L
+
+tasks.register('downloadModel') {
+    doLast {
+        if (!modelFile.exists() || modelFile.length() != MODEL_SIZE) {
+            if (modelFile.exists()) {
+                logger.lifecycle("Model cu sai kich thuoc (${modelFile.length()} bytes), tai lai")
+                modelFile.delete()
+            }
+            modelFile.parentFile.mkdirs()
+            def url = "https://drive.usercontent.google.com/u/0/uc?id=${modelDriveFileId}&export=download"
+            logger.lifecycle("Downloading voice model: ${url}")
+            ant.get(src: url, dest: modelFile)
+            if (!modelFile.exists() || modelFile.length() != MODEL_SIZE) {
+                throw new GradleException("Tai model that bai (can ${MODEL_SIZE} bytes, duoc ${modelFile.exists() ? modelFile.length() : 0}): ${modelFile}")
+            }
+            logger.lifecycle("Downloaded voice model: ${modelFile.length()} bytes")
+        }
+    }
+}
+
+// espeak-ng-data: du lieu phien am espeak-ng, dung chung cho moi giong Piper.
+// KHONG commit (19MB, ~350 file) — tai file nen tu sherpa-onnx releases
+// luc build va giai nen vao assets/piper/. Da kiem chung: giai nen ra
+// giong het ban dang dung (355 file, 17991651 bytes).
+def espeakUrl = 'https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/espeak-ng-data.tar.bz2'
+def espeakDir = file("src/main/assets/piper/espeak-ng-data")
+def espeakArchive = file("build/espeak-ng-data.tar.bz2")
+
+tasks.register('downloadEspeakData') {
+    doLast {
+        if (!new File(espeakDir, "vi_dict").exists()) {
+            if (espeakDir.exists()) {
+                delete(espeakDir)
+            }
+            espeakArchive.parentFile.mkdirs()
+            logger.lifecycle("Downloading espeak-ng-data: ${espeakUrl}")
+            ant.get(src: espeakUrl, dest: espeakArchive)
+            if (!espeakArchive.exists() || espeakArchive.length() < 1_000_000) {
+                throw new GradleException("Tai espeak-ng-data that bai: ${espeakArchive}")
+            }
+            espeakDir.parentFile.mkdirs()
+            ant.untar(src: espeakArchive, dest: espeakDir.parentFile, compression: 'bzip2')
+            if (!new File(espeakDir, "vi_dict").exists()) {
+                throw new GradleException("Giai nen espeak-ng-data that bai (thieu vi_dict): ${espeakDir}")
+            }
+            logger.lifecycle("Extracted espeak-ng-data: ${espeakDir}")
+        }
+    }
+}
+
+android {
+    namespace 'vn.matthat.tts'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "vn.matthat.tts"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+        debug {
+            // De ten file APK de nhan biet (giong SaveGo: app-debug.apk)
+            applicationIdSuffix ""
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    // Model .onnx de NGUYEN trong APK (khong nen) de ONNX Runtime
+    // doc truc tiep qua AssetManager; tokens.txt cung vay.
+    aaptOptions {
+        noCompress 'onnx', 'txt'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    // AAR sherpa-onnx (ban static-link: da gom onnxruntime ben trong,
+    // khong can them dependency onnxruntime rieng).
+    implementation files("libs/${sherpaAarName}")
+}

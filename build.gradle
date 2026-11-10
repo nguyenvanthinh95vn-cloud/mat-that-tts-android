@@ -1,0 +1,6 @@
+// Top-level build file. Phien ban giong het repo SaveGo (apk-test-app)
+// da build thanh cong tren GitHub Actions.
+plugins {
+    id 'com.android.application' version '8.5.2' apply false
+    id 'org.jetbrains.kotlin.android' version '2.0.20' apply false
+}
