@@ -9,9 +9,10 @@ không mạng, không đăng nhập, không giới hạn ký tự.
 - **Đọc văn bản**: dán truyện dài bao nhiêu cũng được — app tự chia đoạn
   (tối đa 800 ký tự/đoạn, cắt ở ranh giới câu) rồi nối thành 1 file.
   Tốc độ đọc 0.5x–2.0x, nghe thử đoạn đầu, nút Dừng, đếm ký tự.
-- **SRT → Voice**: đọc file `.srt` — 3 chế độ: giữ đúng timestamp từng
-  dòng (mặc định, như bản Windows), đọc liền mạch, hoặc giữ timeline +
-  tự đọc nhanh (tối đa 1,5x) khi câu dài quá giờ của nó.
+- **SRT → Voice**: đọc file `.srt` — 3 chế độ: giữ timeline + tự đọc nhanh
+  (mặc định; khi câu dài quá giờ thì giọng đọc nhanh lên tới 2,5x và các
+  khoảng lặng sau dấu câu cũng ngắn lại theo cùng tỉ lệ để câu vừa đúng slot),
+  giữ đúng timestamp từng dòng (như bản Windows), hoặc đọc liền mạch.
 - **Cài đặt**: nghỉ sau dấu câu (phẩy 0.25s, chấm 0.45s, hai chấm 0.3s,
   chấm phẩy 0.4s, ngắt đoạn 0.5s, ngắt đoạn văn 1.0s), noise_scale/noise_w,
   âm lượng đỉnh, định dạng file M4A (AAC, mặc định) hoặc WAV.

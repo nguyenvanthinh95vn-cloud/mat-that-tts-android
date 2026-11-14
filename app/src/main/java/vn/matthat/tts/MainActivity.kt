@@ -559,7 +559,10 @@ class MainActivity : AppCompatActivity() {
                 } else if (autoTimeline) {
                     // Giu timeline + tu tang toc khi cau dai qua gio cua no:
                     // cau vua gio thi doc toc do thuong, cau dai qua thi doc lai
-                    // nhanh hon de kip cau sau (toi da 1,5x toc do hien tai, khong qua 2,0x).
+                    // nhanh hon de kip cau sau (toi da 2,5x). QUAN TRONG: khi doc
+                    // nhanh thi cac khoang lang sau dau cau cung phai ngan lai theo
+                    // cung ti le — neu khong thi cau van tran slot vi phan lang
+                    // khong he ngan lai (day la loi cua ban truoc).
                     var posSec = 0.0
                     var sped = 0
                     var stillOver = 0
@@ -580,13 +583,31 @@ class MainActivity : AppCompatActivity() {
                             break
                         }
                         if (slot > 0 && dur > slot) {
-                            val need = (dur / slot).toFloat()
-                            val fast = minOf(speed * need, speed * 1.5f, 2.0f)
-                            cueTemp.file.delete()
-                            cueTemp = newTempPcm()
-                            appendTextWithPauses(cueTemp, cue.text, rules, fast)
-                            cueTemp.close()
-                            dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
+                            // Doc lai nhanh hon: toc do giong tang theo ti le can
+                            // thiet, dong thoi cac khoang lang cung ngan lai theo
+                            // cung ti le thi tong moi vua slot.
+                            var fast = minOf(speed * (dur / slot).toFloat(), 2.5f)
+                            var tries = 0
+                            while (tries < 2) {
+                                val factor = fast / speed
+                                val scaled = rules.copy(
+                                    breakPause = rules.breakPause / factor,
+                                    chunkPause = rules.chunkPause / factor,
+                                    comma = rules.comma / factor,
+                                    dot = rules.dot / factor,
+                                    colon = rules.colon / factor,
+                                    semi = rules.semi / factor
+                                )
+                                cueTemp.file.delete()
+                                cueTemp = newTempPcm()
+                                appendTextWithPauses(cueTemp, cue.text, scaled, fast)
+                                cueTemp.close()
+                                dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
+                                tries++
+                                if (dur <= slot || fast >= 2.5f) break
+                                // Toc do TTS khong tuyen tinh han: chinh them 1 lan.
+                                fast = minOf(fast * (dur / slot).toFloat(), 2.5f)
+                            }
                             if (dur > slot) stillOver++ else sped++
                         }
                         temp.appendPcmFile(cueTemp)
@@ -595,7 +616,7 @@ class MainActivity : AppCompatActivity() {
                         updateProgress(index + 1, srtCues.size, "Đang đọc dòng ${index + 1}/${srtCues.size}...")
                     }
                     if (sped > 0) appendLog("Da tu tang toc $sped dong de kip timeline.")
-                    if (stillOver > 0) appendLog("Co $stillOver dong van tran du da tang toc toi da.")
+                    if (stillOver > 0) appendLog("Co $stillOver dong van tran du da tang toc toi da (2.5x).")
                 } else {
                     val text = srtCues.joinToString(" ") { it.text }
                     val chunks = splitIntoChunks(text)
@@ -637,7 +658,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun newTempPcm(): AudioFileWriter.PcmTempFile {
-        val file = File(cacheDir, "temp-${System.currentTimeMillis()}.pcm")
+        // nanoTime: tranh trung ten file khi tao 2 temp trong cung 1 ms
+        // (trung ten se lam 2 FileOutputStream cung ghi 1 file).
+        val file = File(cacheDir, "temp-${System.nanoTime()}.pcm")
         return AudioFileWriter.PcmTempFile(file, engine.sampleRate)
     }
 

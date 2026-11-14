@@ -250,7 +250,6 @@
                 android:id="@+id/rbTimeline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="Giữ đúng timestamp từng dòng (như bản Windows)" />
 
             <RadioButton
@@ -263,6 +262,7 @@
                 android:id="@+id/rbAutoTimeline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:checked="true"
                 android:text="Giữ timeline + tự đọc nhanh khi câu dài quá giờ" />
         </RadioGroup>
 
