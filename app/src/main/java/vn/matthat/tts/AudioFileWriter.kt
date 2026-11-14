@@ -67,6 +67,19 @@ object AudioFileWriter {
             totalSamples += n
         }
 
+        /** Chen noi dung PCM tho tu 1 file tam khac (da dong) vao file nay. */
+        fun appendPcmFile(other: PcmTempFile) {
+            FileInputStream(other.file).use { input ->
+                val buf = ByteArray(65536)
+                var read: Int
+                while (input.read(buf).also { read = it } != -1) {
+                    out.write(buf, 0, read)
+                }
+            }
+            totalSamples += other.totalSamples
+            if (other.peak > peak) peak = other.peak
+        }
+
         fun close() {
             out.flush()
             out.close()

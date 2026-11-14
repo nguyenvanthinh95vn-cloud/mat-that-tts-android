@@ -258,6 +258,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Đọc liền mạch các dòng nối nhau" />
+
+            <RadioButton
+                android:id="@+id/rbAutoTimeline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Giữ timeline + tự đọc nhanh khi câu dài quá giờ" />
         </RadioGroup>
 
         <EditText
@@ -287,7 +293,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
-            android:text="Chế độ giữ timestamp: mỗi câu đọc đúng vào giờ của nó trong file SRT, câu nào đọc dài quá giờ của nó thì để tràn (không dời câu sau) — giống hệt bản Windows."
+            android:text="Chế độ giữ timestamp: mỗi câu đọc đúng vào giờ của nó trong file SRT, câu nào đọc dài quá giờ của nó thì để tràn (không dời câu sau) — giống hệt bản Windows. Chế độ tự đọc nhanh: câu nào dài quá giờ thì tự tăng tốc (tối đa 1,5 lần) để kịp câu sau, câu vừa giờ thì giữ tốc độ thường."
             android:textColor="@color/matthat_hint"
             android:textSize="13sp" />
     </LinearLayout>

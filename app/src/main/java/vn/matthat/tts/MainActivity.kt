@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvSrtFile: TextView
     private lateinit var rgSrtMode: RadioGroup
     private lateinit var rbTimeline: RadioButton
+    private lateinit var rbAutoTimeline: RadioButton
     private lateinit var etSrtFileName: EditText
     private lateinit var btnGenerateSrt: Button
 
@@ -222,6 +223,7 @@ class MainActivity : AppCompatActivity() {
         tvSrtFile = findViewById(R.id.tvSrtFile)
         rgSrtMode = findViewById(R.id.rgSrtMode)
         rbTimeline = findViewById(R.id.rbTimeline)
+        rbAutoTimeline = findViewById(R.id.rbAutoTimeline)
         etSrtFileName = findViewById(R.id.etSrtFileName)
         btnGenerateSrt = findViewById(R.id.btnGenerateSrt)
 
@@ -529,9 +531,10 @@ class MainActivity : AppCompatActivity() {
         val speed = settings.speed
         val rules = settings.toPauseRules()
         val keepTimeline = rbTimeline.isChecked
+        val autoTimeline = rbAutoTimeline.isChecked
         stopRequested.set(false)
         setBusy(true)
-        appendLog("Bat dau doc SRT (${srtCues.size} dong, ${if (keepTimeline) "giu timeline" else "lien mach"})...")
+        appendLog("Bat dau doc SRT (${srtCues.size} dong, ${if (keepTimeline) "giu timeline" else if (autoTimeline) "giu timeline + tu tang toc" else "lien mach"})...")
         executor.execute {
             try {
                 val temp = newTempPcm()
@@ -553,6 +556,46 @@ class MainActivity : AppCompatActivity() {
                         updateProgress(index + 1, srtCues.size, "Đang đọc dòng ${index + 1}/${srtCues.size}...")
                     }
                     if (over > 0) appendLog("Co $over dong doc tran gio cua no (de tran, khong doi dong sau).")
+                } else if (autoTimeline) {
+                    // Giu timeline + tu tang toc khi cau dai qua gio cua no:
+                    // cau vua gio thi doc toc do thuong, cau dai qua thi doc lai
+                    // nhanh hon de kip cau sau (toi da 1,5x toc do hien tai, khong qua 2,0x).
+                    var posSec = 0.0
+                    var sped = 0
+                    var stillOver = 0
+                    for ((index, cue) in srtCues.withIndex()) {
+                        if (stopRequested.get()) break
+                        if (cue.start > posSec) {
+                            temp.appendSilence((cue.start - posSec).toFloat())
+                            posSec = cue.start
+                        }
+                        val slot = cue.end - cue.start
+                        // Lan 1: doc toc do thuong vao file tam rieng de do thoi luong that.
+                        var cueTemp = newTempPcm()
+                        appendTextWithPauses(cueTemp, cue.text, rules, speed)
+                        cueTemp.close()
+                        var dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
+                        if (stopRequested.get()) {
+                            cueTemp.file.delete()
+                            break
+                        }
+                        if (slot > 0 && dur > slot) {
+                            val need = (dur / slot).toFloat()
+                            val fast = minOf(speed * need, speed * 1.5f, 2.0f)
+                            cueTemp.file.delete()
+                            cueTemp = newTempPcm()
+                            appendTextWithPauses(cueTemp, cue.text, rules, fast)
+                            cueTemp.close()
+                            dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
+                            if (dur > slot) stillOver++ else sped++
+                        }
+                        temp.appendPcmFile(cueTemp)
+                        cueTemp.file.delete()
+                        posSec = maxOf(posSec, cue.start + dur)
+                        updateProgress(index + 1, srtCues.size, "Đang đọc dòng ${index + 1}/${srtCues.size}...")
+                    }
+                    if (sped > 0) appendLog("Da tu tang toc $sped dong de kip timeline.")
+                    if (stillOver > 0) appendLog("Co $stillOver dong van tran du da tang toc toi da.")
                 } else {
                     val text = srtCues.joinToString(" ") { it.text }
                     val chunks = splitIntoChunks(text)
