@@ -557,15 +557,13 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (over > 0) appendLog("Co $over dong doc tran gio cua no (de tran, khong doi dong sau).")
                 } else if (autoTimeline) {
-                    // Giu timeline + tu tang toc khi cau dai qua gio cua no:
-                    // cau vua gio thi doc toc do thuong, cau dai qua thi doc lai
-                    // nhanh hon de kip cau sau (toi da 2,5x). QUAN TRONG: khi doc
-                    // nhanh thi cac khoang lang sau dau cau cung phai ngan lai theo
-                    // cung ti le — neu khong thi cau van tran slot vi phan lang
-                    // khong he ngan lai (day la loi cua ban truoc).
+                    // Giu timeline + keo nhanh cau dai ve vua slot (WSOLA, giong
+                    // ffmpeg atempo cua tool ProTTS): doc cau o toc do thuong,
+                    // neu dai hon slot thi keo ngan audio lai dung bang slot,
+                    // cao do khong doi. Tang toc bang giong doc khong lam duoc
+                    // viec nay (dat 2,5x cung chi ngan ~20%).
                     var posSec = 0.0
-                    var sped = 0
-                    var stillOver = 0
+                    var stretched = 0
                     for ((index, cue) in srtCues.withIndex()) {
                         if (stopRequested.get()) break
                         if (cue.start > posSec) {
@@ -573,50 +571,19 @@ class MainActivity : AppCompatActivity() {
                             posSec = cue.start
                         }
                         val slot = cue.end - cue.start
-                        // Lan 1: doc toc do thuong vao file tam rieng de do thoi luong that.
-                        var cueTemp = newTempPcm()
-                        appendTextWithPauses(cueTemp, cue.text, rules, speed)
-                        cueTemp.close()
-                        var dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
-                        if (stopRequested.get()) {
-                            cueTemp.file.delete()
-                            break
-                        }
+                        var samples = synthCue(cue.text, rules, speed)
+                        var dur = samples.size.toDouble() / engine.sampleRate
                         if (slot > 0 && dur > slot) {
-                            // Doc lai nhanh hon: toc do giong tang theo ti le can
-                            // thiet, dong thoi cac khoang lang cung ngan lai theo
-                            // cung ti le thi tong moi vua slot.
-                            var fast = minOf(speed * (dur / slot).toFloat(), 2.5f)
-                            var tries = 0
-                            while (tries < 2) {
-                                val factor = fast / speed
-                                val scaled = rules.copy(
-                                    breakPause = rules.breakPause / factor,
-                                    chunkPause = rules.chunkPause / factor,
-                                    comma = rules.comma / factor,
-                                    dot = rules.dot / factor,
-                                    colon = rules.colon / factor,
-                                    semi = rules.semi / factor
-                                )
-                                cueTemp.file.delete()
-                                cueTemp = newTempPcm()
-                                appendTextWithPauses(cueTemp, cue.text, scaled, fast)
-                                cueTemp.close()
-                                dur = cueTemp.totalSamples.toDouble() / cueTemp.sampleRate
-                                tries++
-                                if (dur <= slot || fast >= 2.5f) break
-                                // Toc do TTS khong tuyen tinh han: chinh them 1 lan.
-                                fast = minOf(fast * (dur / slot).toFloat(), 2.5f)
-                            }
-                            if (dur > slot) stillOver++ else sped++
+                            val target = (slot * engine.sampleRate).toInt()
+                            samples = Wsola.timeStretch(samples, target)
+                            dur = samples.size.toDouble() / engine.sampleRate
+                            stretched++
                         }
-                        temp.appendPcmFile(cueTemp)
-                        cueTemp.file.delete()
+                        temp.append(samples)
                         posSec = maxOf(posSec, cue.start + dur)
                         updateProgress(index + 1, srtCues.size, "Đang đọc dòng ${index + 1}/${srtCues.size}...")
                     }
-                    if (sped > 0) appendLog("Da tu tang toc $sped dong de kip timeline.")
-                    if (stillOver > 0) appendLog("Co $stillOver dong van tran du da tang toc toi da (2.5x).")
+                    if (stretched > 0) appendLog("Da keo nhanh $stretched dong cho vua timeline (cao do khong doi).")
                 } else {
                     val text = srtCues.joinToString(" ") { it.text }
                     val chunks = splitIntoChunks(text)
@@ -655,6 +622,32 @@ class MainActivity : AppCompatActivity() {
             temp.append(samples)
             if (pause > 0f) temp.appendSilence(pause)
         }
+    }
+
+    /** Doc 1 cue thanh FloatArray trong RAM (de keo gian neu can). */
+    private fun synthCue(text: String, rules: PauseRules, speed: Float): FloatArray {
+        val parts = ArrayList<FloatArray>()
+        var total = 0
+        for ((frag, pause) in splitFragments(text, rules)) {
+            if (stopRequested.get()) break
+            val samples = engine.generate(frag, speed)
+            parts.add(samples)
+            total += samples.size
+            if (pause > 0f) {
+                val n = (pause * engine.sampleRate).toInt()
+                if (n > 0) {
+                    parts.add(FloatArray(n))
+                    total += n
+                }
+            }
+        }
+        val out = FloatArray(total)
+        var p = 0
+        for (a in parts) {
+            a.copyInto(out, p)
+            p += a.size
+        }
+        return out
     }
 
     private fun newTempPcm(): AudioFileWriter.PcmTempFile {
